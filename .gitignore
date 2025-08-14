@@ -10,10 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 
-/dist
-
-.turbo
-
 # testing
 /coverage
 

@@ -14,6 +14,14 @@ export default [
   ...tseslint.configs.recommended,
   ...compat.extends('prettier'),
   {
+    languageOptions: {
+      globals: {
+        document: 'readonly',
+        window: 'readonly',
+        module: 'writable',
+        setTimeout: 'readonly',
+      },
+    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',

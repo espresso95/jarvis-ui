@@ -1,40 +1,95 @@
-'use client';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import loadingAnimation from '../assets/lottie/loading.json';
+import { FBXLoader } from 'three-stdlib';
+import * as THREE from 'three';
 
-import { useState, useEffect } from 'react';
+// Lazy load Lottie with proper typing
+const LottieComponent = lazy(() => 
+  import('lottie-react').then(module => ({ 
+    default: module.default as React.ComponentType<any>
+  }))
+);
 
 interface LoadingScreenProps {
-  duration?: number; // Duration in milliseconds
+  onComplete: () => void;
+  duration?: number;
+  preloadModels?: string[]; // Array of model paths to preload
 }
 
-export default function LoadingScreen({ duration = 3000 }: LoadingScreenProps) {
-  const [show, setShow] = useState(true);
-  const [fadeOut, setFadeOut] = useState(false);
+const LoadingScreen: React.FC<LoadingScreenProps> = ({
+  onComplete,
+  duration = 5000,
+  preloadModels = [],
+}) => {
+  const [isVisible, setIsVisible] = useState(true);
+  const [modelsLoaded, setModelsLoaded] = useState(false);
 
   useEffect(() => {
-    // Always show animation on page load/refresh
-    const fadeTimer = setTimeout(() => {
-      setFadeOut(true);
-    }, duration - 800);
+    const preloadAllModels = async () => {
+      if (preloadModels.length === 0) {
+        setModelsLoaded(true);
+        return;
+      }
 
-    const hideTimer = setTimeout(() => {
-      setShow(false);
+      const loader = new FBXLoader();
+      const loadPromises = preloadModels.map((modelPath) => {
+        return new Promise((resolve) => {
+          loader.load(
+            modelPath,
+            (fbx: THREE.Group) => {
+              console.log(`Preloaded model: ${modelPath}`);
+              resolve(fbx);
+            },
+            (progress: ProgressEvent) => {
+              console.log(
+                `Loading ${modelPath}: ${
+                  (progress.loaded / progress.total) * 100
+                }%`,
+              );
+            },
+            (error: unknown) => {
+              console.warn(`Failed to preload ${modelPath}:`, error);
+              resolve(null); // Don't fail the whole loading process
+            },
+          );
+        });
+      });
+
+      try {
+        await Promise.all(loadPromises);
+        setModelsLoaded(true);
+      } catch (error) {
+        console.error('Error preloading models:', error);
+        setModelsLoaded(true); // Continue anyway
+      }
+    };
+
+    preloadAllModels();
+  }, [preloadModels]);
+
+  useEffect(() => {
+    // Only start the timer after models are loaded
+    if (!modelsLoaded) return;
+
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      onComplete();
     }, duration);
 
-    return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(hideTimer);
-    };
-  }, [duration]);
+    return () => clearTimeout(timer);
+  }, [duration, onComplete, modelsLoaded]);
 
-  if (!show) return null;
+  if (!isVisible) return null;
 
   return (
-    <div
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-1000 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
-    >
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="text-white text-2xl">Loading...</div>
+    <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+      <div className="w-32 h-32">
+        <Suspense fallback={<div className="w-32 h-32 bg-gray-200 animate-pulse rounded-full" />}>
+          <LottieComponent animationData={loadingAnimation} loop={true} autoplay={true} />
+        </Suspense>
       </div>
     </div>
   );
-}
+};
+
+export default LoadingScreen;

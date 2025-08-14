@@ -1,47 +1,48 @@
-import { defineConfig } from "vite";
-import react from '@vitejs/plugin-react-swc'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import svgr from 'vite-plugin-svgr';
+import viteCompression from 'vite-plugin-compression';
+import path from 'path';
 
 export default defineConfig({
-  plugins: [
-    react(),
-  ],
+  plugins: [react(), svgr(), viteCompression()],
   resolve: {
     alias: {
-    },
-  },
-  optimizeDeps: {
-    include: [
-      // Critical Solana dependencies
-      "@solana/wallet-adapter-react",
-      "@solana/wallet-adapter-react-ui",
-      "@solana/wallet-adapter-phantom",
-      "@solana/web3.js",
-      
-      // Heavy UI libraries used throughout the app
-      "@mui/material",
-      "@mui/icons-material",
-      "@emotion/react",
-      "@emotion/styled",
-      
-      // Trading/Chart libraries (large bundle)
-      "lightweight-charts",
-      
-      // HTTP client (commonly used)
-      "axios",
-    ],
-    esbuildOptions: {
-      target: 'esnext',
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {
-    port: 3001, // Match the Next.js port for consistency
+    port: 3002,
   },
   build: {
-    outDir: "dist",
+    outDir: 'dist',
     emptyOutDir: true,
-    commonjsOptions: {
-      transformMixedEsModules: true,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // Split vendor chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('lottie')) {
+              return 'lottie-vendor';
+            }
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            if (id.includes('three') || id.includes('@react-three')) {
+              return 'three-vendor';
+            }
+            if (id.includes('@mui')) {
+              return 'mui-vendor';
+            }
+            // Group other node_modules together
+            return 'vendor';
+          }
+        },
+      },
     },
-    target: 'esnext',
+    chunkSizeWarningLimit: 600,
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
   },
 });

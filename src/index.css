@@ -1,0 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap");
+
+/* Using Google Fonts instead of local font files */
+/* Haffer font replaced with Inter (similar geometric sans-serif) */
+/* FiraCode available from Google Fonts */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Logo rotation animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logo-spin {
+  animation: spin 10s linear infinite;
+}
+
+@layer base {
+  :root {
+    --font-sans: "Inter", "Helvetica", "Arial", sans-serif;
+    --font-mono: "Fira Code", "Courier New", monospace;
+    --font-dm-mono: "DM Mono", monospace;
+  }
+  
+  body {
+    font-family: var(--font-dm-mono);
+    background-color: white;
+    color: #0e1013;
+  }
+}
+
+/* CSS Scroll Snap Implementation */
+.scroll-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.snap-section {
+  height: 100vh;
+  scroll-snap-align: start;
+}
+
+.inner-scroll {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Hide scrollbars but keep functionality */
+.scroll-container,
+.inner-scroll,
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scroll-container::-webkit-scrollbar,
+.inner-scroll::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Navbar visibility fixes */
+nav {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+}

@@ -1,7 +1,6 @@
-# Notos Trader UI
+# Jarvis UI
 
-This is the React frontend for the Notos Trader project built with
-[Vite](https://vitejs.dev/).
+A React application built with TypeScript and Tailwind CSS using [Vite](https://vitejs.dev/).
 
 ## Getting Started
 
@@ -10,7 +9,7 @@ pnpm install
 pnpm dev
 ```
 
-The development server runs on [http://localhost:3001](http://localhost:3001).
+The development server runs on [http://localhost:3002](http://localhost:3002).
 
 ## Building for Production
 
@@ -18,16 +17,20 @@ The development server runs on [http://localhost:3001](http://localhost:3001).
 pnpm run build
 ```
 
-The static files are output to the `dist` directory and can be served by any
-static hosting solution.
+The static files are output to the `dist` directory and can be served by any static hosting solution.
 
-## Additional Scripts
+## Available Scripts
 
-- `pnpm run lint` – run ESLint
-- `pnpm run format` – format source files with Prettier
+- `pnpm dev` – start the app in development mode
+- `pnpm run build` – create a production build
 - `pnpm preview` – preview the production build locally
+- `pnpm test` – run tests
 
-## License
+## Project Structure
 
-MIT
-
+```
+src/
+  ├── main.tsx        # Entry point
+  ├── App.tsx          # Main App component
+  └── index.css        # Global styles with Tailwind
+```
