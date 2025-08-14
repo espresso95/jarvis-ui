@@ -1,0 +1,21 @@
+{
+  "extends": ["@tsconfig/vite-react/tsconfig.json"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "types": ["vite/client", "@react-three/fiber"],
+    "incremental": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler"
+  },
+  "include": ["src"]
+}

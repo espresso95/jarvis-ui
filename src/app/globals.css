@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: oklch(0.84 0.18 117.33);
+    --color-bright-red: #ff0033;
+    --font-sans: "Inter", sans-serif;
+    --spacing: 0.25rem;
+    --navbar-background: #000000;
+  }
+}
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Roboto", sans-serif;
+  --font-mono: monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+}
+
+/* Add your custom styles here */
