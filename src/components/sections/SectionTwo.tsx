@@ -4,13 +4,13 @@ import StatsGrid from '../StatsGrid';
 import TokenPrice from '../TokenPrice';
 import PageLayout from '../PageLayout';
 import EvolutionProgress from '../EvolutionProgress';
-import CullCountdown from '../CullCountdown';
+
 import {
   Bots,
   Stats,
   TokenData,
   EvolutionData,
-  cullTimestamp,
+
 } from '../../data/mockData';
 
 const SectionTwo: React.FC = () => {

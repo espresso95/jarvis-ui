@@ -28,25 +28,33 @@ interface Globe3DProps {
 
 // Default model path as string constant
 const DEFAULT_MODEL_PATH = '/models/ModelGlb.glb';
+
+// Preload the GLB model
+useGLTF.preload(DEFAULT_MODEL_PATH);
+
 const GLBModelPointCloud: React.FC<PointCloudProps> = ({
   count = 8000,
   radius = 3,
-  heartbeat = {
-    minScale: 1.0,
-    maxScale: 1.15,
-    beatSpeed: 2.5,
-    pauseDuration: 0.8,
-  },
   modelPath = DEFAULT_MODEL_PATH,
 }) => {
   const pointsRef = useRef<THREE.Points>(null);
   const groupRef = useRef<THREE.Group>(null);
   const [modelVertices, setModelVertices] = useState<number[]>([]);
+  const [isModelLoaded, setIsModelLoaded] = useState(false);
+  const [modelError, setModelError] = useState<string | null>(null);
 
   // Configure Draco decoder
   useEffect(() => {
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+    // Try multiple decoder paths for better compatibility
+    try {
+      dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+    } catch (error) {
+      console.warn('Failed to set external DRACO decoder, trying local fallback');
+      // Fallback to local decoder if external fails
+      dracoLoader.setDecoderPath('/draco/');
+    }
+    
     // Set the decoder globally for GLTFLoader
     THREE.DefaultLoadingManager.addHandler(/\.drc$/, dracoLoader);
     
@@ -56,11 +64,12 @@ const GLBModelPointCloud: React.FC<PointCloudProps> = ({
   }, []);
 
   // Load GLB model with DRACO support
-  const gltf = useGLTF(modelPath, true); // Enable DRACO
+  const gltf = useGLTF(modelPath);
 
   // Extract vertices from GLB model
   useEffect(() => {
-    if (gltf) {
+    if (gltf && gltf.scene) {
+      console.log('GLB model loaded successfully:', gltf);
       const vertices: number[] = [];
 
       // Process the GLB scene
@@ -84,11 +93,16 @@ const GLBModelPointCloud: React.FC<PointCloudProps> = ({
       };
 
       // GLB files contain a scene, so we process the scene
-      if (gltf.scene) {
-        processGroup(gltf.scene);
-      }
-
+      processGroup(gltf.scene);
+      console.log(`Extracted ${vertices.length / 3} vertices from GLB model`);
       setModelVertices(vertices);
+      setIsModelLoaded(true);
+      setModelError(null);
+    } else if (gltf) {
+      console.warn('GLB model loaded but no scene found:', gltf);
+      setModelError('Model loaded but no scene found');
+    } else {
+      console.log('GLB model not yet loaded');
     }
   }, [gltf]);
 
@@ -324,20 +338,37 @@ const GLBModelPointCloud: React.FC<PointCloudProps> = ({
     positionAttribute.needsUpdate = true;
   });
 
+  // Show loading state or error
+  if (modelError) {
+    console.error('Model error:', modelError);
+  }
+
+  // If no model vertices, show a fallback sphere
+  if (modelVertices.length === 0 && !isModelLoaded) {
+    return (
+      <group ref={groupRef}>
+        <mesh>
+          <sphereGeometry args={[radius * 0.3, 32, 32]} />
+          <meshBasicMaterial color="black" wireframe />
+        </mesh>
+      </group>
+    );
+  }
+
   return (
     <group ref={groupRef}>
       <points ref={pointsRef}>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
+            args={[positions, 3]}
             count={count}
-            array={positions}
             itemSize={3}
           />
           <bufferAttribute
             attach="attributes-color"
+            args={[colors, 3]}
             count={count}
-            array={colors}
             itemSize={3}
           />
         </bufferGeometry>
@@ -356,12 +387,6 @@ const Globe3D: React.FC<Globe3DProps> = ({
   className = 'w-full h-[90%] md:w-[1000px] md:h-[1000px]',
   pointCount = 8000,
   globeRadius = 3,
-  heartbeat = {
-    minScale: 1.0,
-    maxScale: 1.15,
-    beatSpeed: 2.5,
-    pauseDuration: 0.8,
-  },
   modelPath = DEFAULT_MODEL_PATH,
 }) => {
   return (
@@ -384,7 +409,6 @@ const Globe3D: React.FC<Globe3DProps> = ({
         <GLBModelPointCloud
           count={pointCount}
           radius={globeRadius}
-          heartbeat={heartbeat}
           modelPath={modelPath}
         />
 

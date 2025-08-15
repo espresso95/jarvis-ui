@@ -11,7 +11,7 @@ const EvolutionProgress: React.FC<EvolutionProgressProps> = ({
   currentStage,
   nextStage,
   progress,
-  statusColor = 'bg-statuspending',
+
 }) => {
   return (
     <div className="mb-12 md:mb-14 md:mt-20">

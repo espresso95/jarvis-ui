@@ -9,7 +9,7 @@ interface PageLayoutProps {
 
 const PageLayout: React.FC<PageLayoutProps> = ({
   children,
-  showBottomNavbar = true,
+
   className = '',
 }) => {
   return (
