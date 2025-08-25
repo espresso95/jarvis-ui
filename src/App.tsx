@@ -1,9 +1,8 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Agents from './pages/Agents';
+import VaultPage from './pages/VaultPage';
 import Navbar from './components/Navbar';
 import AgentDetail from './pages/AgentDetail';
-import AccountPage from './pages/AccountPage';
 import Home from './pages/Home';
 
 function App() {
@@ -13,9 +12,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/agents" element={<Agents />} />
-          <Route path="/agents/:agentId" element={<AgentDetail />} />
-          <Route path="/account" element={<AccountPage />} />
+          <Route path="/vault" element={<VaultPage />} />
+          <Route path="/vault/:agentId" element={<AgentDetail />} />
         </Routes>
       </Router>
     </div>

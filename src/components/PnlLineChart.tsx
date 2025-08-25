@@ -40,7 +40,12 @@ export default function PnlLineChart({ data, dates }: PnlLineChartProps) {
         {
           data: dates,
           scaleType: 'point',
-          tickLabelStyle: { display: 'none' },
+          // Removed tickLabelStyle: { display: 'none' } to show X-axis labels
+          valueFormatter: (value: string) => {
+            // Convert YYYY-MM-DD to DD/MM format
+            const date = new Date(value);
+            return `${date.getDate()}/${date.getMonth() + 1}`;
+          },
         },
       ]}
       yAxis={[
@@ -61,7 +66,7 @@ export default function PnlLineChart({ data, dates }: PnlLineChartProps) {
             value !== null ? `$${value}` : '$0',
         },
       ]}
-      margin={{ left: 0, right: 20, top: 20, bottom: 20 }}
+      margin={{ left: 60, right: 20, top: 20, bottom: 40 }}
       sx={{
         '.MuiChartsLineElement-root': { stroke: 'black', strokeWidth: 1 },
         '.MuiChartsMarkElement-root': {

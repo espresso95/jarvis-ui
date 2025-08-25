@@ -20,7 +20,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agents }) => {
   const navigate = useNavigate();
 
   const handleAgentClick = (agentId: number) => {
-    navigate(`/agents/${agentId}`);
+    navigate(`/vault/${agentId}`);
   };
 
   // Sort agents: ACTIVE first, then CULLED, then by TVL (highest first)
